@@ -10,18 +10,25 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "dotenv": "^5.0.1",
+    "pre-commit": "^1.2.2",
+    "solhint": "^1.2.1",
+    "solium": "^1.1.7",
     "truffle-hdwallet-provider": "0.0.3",
     "web3": "^1.0.0-beta.34"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "solidity-coverage": "^0.5.4"
+  },
   "scripts": {
     "test": "truffle test",
     "address": "truffle exec scripts/address-proxy.js",
     "address:ropsten": "truffle exec scripts/address-proxy.js --network ropsten",
-    "address:main": "truffle exec scripts/address-proxy.js --network main"
+    "address:main": "truffle exec scripts/address-proxy.js --network main",
+    "lint": "./scripts/lint.sh"
   },
   "keywords": [
     "asf",
     "appcoins"
-  ]
+  ],
+  "pre-commit": "lint"
 }
