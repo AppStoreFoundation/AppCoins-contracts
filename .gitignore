@@ -1,5 +1,6 @@
 # Solidity contracts - Truffle
-deploy/build/
-deploy/node_modules/
-deploy/package-lock.json
-deploy/.env
+build/
+node_modules/
+package-lock.json
+.env
+test.js

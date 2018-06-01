@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 contract ERC20Interface {
     function name() public view returns(bytes32);
     function symbol() public view returns(bytes32);
-    function balanceOf (address _owner) public constant returns(uint256 balance);
+    function balanceOf (address _owner) public view returns(uint256 balance);
     function transfer(address _to, uint256 _value) public returns (bool success);
     function transferFrom(address _from, address _to, uint256 _value) public returns (uint);
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -15,25 +15,25 @@ contract AppCoins {
     uint256 public totalSupply;
     mapping (address => mapping (address => uint256)) public allowance;
     
-    function balanceOf (address _owner) public constant returns (uint256);
+    function balanceOf (address _owner) public view returns (uint256);
     function transfer(address _to, uint256 _value) public returns (bool success);
     function transferFrom(address _from, address _to, uint256 _value) public returns (uint);
 }
 
 contract AppCoinsIAB {
-    function division(uint numerator, uint denominator) public constant returns (uint);
-    function buy(uint _amount, string _sku, address _addr_appc, address _dev, address _appstore, address _oem) public constant returns (bool);
+    function division(uint numerator, uint denominator) public view returns (uint);
+    function buy(uint _amount, string _sku, address _addr_appc, address _dev, address _appstore, address _oem) public view returns (bool);
 }
 
 
 contract AppCoinsBClass is ERC20Interface {
 
-	address public owner;
-	bytes32 private tokenName;
-	bytes32 private tokenSymbol;
+    address public owner;
+    bytes32 private tokenName;
+    bytes32 private tokenSymbol;
     uint8 public decimals = 18;
 	// 18 decimals is the strongly suggested default, avoid changing it
-	uint256 public totalSupply;
+    uint256 public totalSupply;
 
 	// This creates an array with all balances
     mapping (address => uint256) public balances;
@@ -50,11 +50,11 @@ contract AppCoinsBClass is ERC20Interface {
     // This notifies clients about the amount created as class B tokens
     event Create(uint256 value, uint256 newTotalSupply);
 
-	function AppCoinsBClass (address addrAppc) {
-		owner = msg.sender;
-		tokenName = "AppCoinsB";
-		tokenSymbol = "APPCB";
-		totalSupply = 0; // Initialy there are 0 class B tokens and the supply is updated as tokens are converted
+    function AppCoinsBClass (address addrAppc)  public {
+        owner = msg.sender;
+        tokenName = "AppCoinsB";
+        tokenSymbol = "APPCB";
+        totalSupply = 0; // Initialy there are 0 class B tokens and the supply is updated as tokens are converted
         appc = AppCoins(addrAppc);
     }   
 
@@ -83,7 +83,7 @@ contract AppCoinsBClass is ERC20Interface {
         appc.transferFrom(msg.sender, address(this), _value);
 
         createToken(to,_value);
-	}
+    }
     /**
      *  Convert class B tokens to class A tokens 
      *  can only be called from IAB contract
@@ -107,7 +107,7 @@ contract AppCoinsBClass is ERC20Interface {
         appc.transfer(to,_value);
 
         emit Transfer(to,address(this),_value); 
-	}
+    }
 	
     /**
      *  Create token
@@ -137,7 +137,7 @@ contract AppCoinsBClass is ERC20Interface {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-         require(balances[_from] >= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
         require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
@@ -163,9 +163,8 @@ contract AppCoinsBClass is ERC20Interface {
     //     _transfer(msg.sender, _to, _amount);
     // }
     function transfer (address _to, uint256 _amount) public returns (bool success) {
-        if (balances[msg.sender] >= _amount
-                && _amount > 0
-                && balances[_to] + _amount > balances[_to]) {
+        if (balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
+            
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             emit Transfer(msg.sender, _to, _amount);
@@ -187,7 +186,7 @@ contract AppCoinsBClass is ERC20Interface {
     function transferFrom(address _from, address _to, uint256 _value) public returns (uint) {
         require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
-         _transfer(_from, _to, _value);
+        _transfer(_from, _to, _value);
         return allowance[_from][msg.sender];
     }
 
