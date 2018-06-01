@@ -273,4 +273,35 @@ contract('Advertisement', function(accounts) {
 		expect(reverted).to.be.equal(true,"Revert expected");
 	})
 
+	it("Should consume the total budget of the campaign", () => {
+        return addInstance.getCampaignsByCountry("PT")
+        .then(result => {
+            campaigns = result;
+            return addInstance.registerPoA(examplePoA.packageName,campaigns[1],examplePoA.timestamp,examplePoA.nonce,accounts[1],accounts[2],walletName);
+        })
+        .then(poa => {
+            return addInstance.isCampaignValid(campaigns[1]);
+        })
+        .then(isValid => {
+            assert.equal(isValid, true, isValid.message);
+        });
+    });
+
+	it("Should consume the total budget of a non existing campaign", () => {
+		return addInstance.getCampaignsByCountry("PT")
+		.then(result => {
+			campaigns = result;
+			return addInstance.registerPoA(examplePoA.packageName,campaigns[1],examplePoA.timestamp,examplePoA.nonce,accounts[1],accounts[2],walletName);
+		})
+		.then(poa => {
+			return addInstance.isCampaignValid(campaigns[5]);
+		})
+		.then(isValid => {
+			assert.fail(isValid, true, "This should not have happened...");
+		})
+		.catch(error => {
+			assert.equal(error, "Error: Invalid number of arguments to Solidity function", "Failed")
+		});
+	});
+
 });
