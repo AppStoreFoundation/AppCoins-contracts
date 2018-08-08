@@ -1,0 +1,11 @@
+version: "3"
+services:
+  appcoins-build:
+    container_name: AppCoinsDev
+    build:
+      context: .
+    volumes:
+      - .:/app
+    ports:
+      - "3000-3001:3000-3001"
+      - "8545:8545"

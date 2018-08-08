@@ -1,0 +1,14 @@
+{
+	"branch":"master",
+	"verifyConditions": [
+	 	"@semantic-release/github"
+	],
+	"repositoryUrl":"git@github.com:AppStoreFoundation/asf-contracts.git",
+	"prepare": [
+		""
+	],
+	"publish": [
+	 	"@semantic-release/github"
+	],
+	"noCi" : true
+}
