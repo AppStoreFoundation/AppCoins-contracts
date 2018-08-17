@@ -1,0 +1,47 @@
+{
+  "name": "asf-contracts",
+  "version": "1.0.0",
+  "description": "Contracts for the AppStore Fundation",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "big-number": "^0.4.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "dotenv": "^5.0.1",
+    "pre-commit": "^1.2.2",
+    "solhint": "^1.2.1",
+    "solium": "^1.1.7",
+    "truffle": "^4.1.11",
+    "truffle-hdwallet-provider": "0.0.3",
+    "typedarray-to-buffer": "^3.1.5",
+    "web3": "^1.0.0-beta.35"
+  },
+  "devDependencies": {
+    "cz-conventional-changelog": "^2.1.0",
+    "semantic-release": "^15.5.1",
+    "solidity-coverage": "^0.5.4"
+  },
+  "scripts": {
+    "test": "truffle test",
+    "address": "truffle exec scripts/address-proxy.js",
+    "address:ropsten": "truffle exec scripts/address-proxy.js --network ropsten",
+    "address:main": "truffle exec scripts/address-proxy.js --network main",
+    "lint": "./scripts/lint.sh",
+    "storage": "truffle exec scripts/advertisement-storage.js",
+    "storage:ropsten": "truffle exec scripts/advertisement-storage.js --network ropsten",
+    "storage:main": "truffle exec scripts/advertisement-storage.js --network main"
+  },
+  "keywords": [
+    "asf",
+    "appcoins"
+  ],
+  "pre-commit": "lint",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

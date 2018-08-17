@@ -29,8 +29,8 @@ module.exports = {
               return new HDWalletProvider(process.env.INFURA_MAINNET_MNEMONIC, `https://mainnet.infura.io/${process.env.INFURA_KEY}`)
             },
             network_id: "1",
-            gasPrice: 3000000000, // Be careful, this is in Shannon
-            gas: 2000000
+            gasPrice: 20000000000, // Be careful, this is in Shannon
+            gas: 4000000
         }
     }
 };
