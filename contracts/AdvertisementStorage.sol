@@ -12,6 +12,7 @@ Advertisement contract. This contract is responsible from storing information re
 aquisiton campaigns.
 */
 contract AdvertisementStorage is Whitelist {
+    using CampaignLibrary for CampaignLibrary.Campaign;
 
     mapping (bytes32 => CampaignLibrary.Campaign) campaigns;
 
@@ -85,13 +86,13 @@ contract AdvertisementStorage is Whitelist {
         CampaignLibrary.Campaign storage campaign = campaigns[campaignId];
 
         return (
-            campaign.bidId,
-            campaign.price,
-            campaign.budget,
-            campaign.startDate,
-            campaign.endDate,
-            campaign.valid,
-            campaign.owner
+            campaign.getBidId(),
+            campaign.getPrice(),
+            campaign.getBudget(),
+            campaign.getStartDate(),
+            campaign.getEndDate(),
+            campaign.getValidity(),
+            campaign.getOwner()
         );
     }
 
@@ -123,22 +124,23 @@ contract AdvertisementStorage is Whitelist {
     public
     onlyIfWhitelisted("setCampaign",msg.sender) {
 
-        CampaignLibrary.Campaign memory campaign = campaigns[campaign.bidId];
+        CampaignLibrary.Campaign storage campaign = campaigns[bidId];
+        campaign.setBidId(bidId);
+        campaign.setPrice(price);
+        campaign.setBudget(budget);
+        campaign.setStartDate(startDate);
+        campaign.setEndDate(endDate);
+        campaign.setValidity(valid);
 
-        campaign = CampaignLibrary.Campaign({
-            bidId: bidId,
-            price: price,
-            budget: budget,
-            startDate: startDate,
-            endDate: endDate,
-            valid: valid,
-            owner: owner
-        });
+        bool newCampaign = (campaigns[bidId].getOwner() == 0x0);
 
-        emitEvent(campaign);
+        campaign.setOwner(owner);
 
-        campaigns[campaign.bidId] = campaign;
-        
+        if(newCampaign){
+            emitCampaignCreated(campaign);
+        } else {
+            emitCampaignUpdated(campaign);
+        }
     }
 
     /**
@@ -152,7 +154,7 @@ contract AdvertisementStorage is Whitelist {
         public
         view
         returns (uint price) {
-        return campaigns[bidId].price;
+        return campaigns[bidId].getPrice();
     }
 
     /** 
@@ -168,8 +170,8 @@ contract AdvertisementStorage is Whitelist {
         onlyIfWhitelisted("setCampaignPriceById",msg.sender) 
         onlyIfCampaignExists("setCampaignPriceById",bidId)      
         {
-        campaigns[bidId].price = price;
-        emitEvent(campaigns[bidId]);
+        campaigns[bidId].setPrice(price);
+        emitCampaignUpdated(campaigns[bidId]);
     }
 
     /**
@@ -183,7 +185,7 @@ contract AdvertisementStorage is Whitelist {
         public
         view
         returns (uint budget) {
-        return campaigns[bidId].budget;
+        return campaigns[bidId].getBudget();
     }
 
     /**
@@ -201,8 +203,8 @@ contract AdvertisementStorage is Whitelist {
         onlyIfCampaignExists("setCampaignBudgetById",bidId)
         onlyIfWhitelisted("setCampaignBudgetById",msg.sender)
         {
-        campaigns[bidId].budget = newBudget;
-        emitEvent(campaigns[bidId]);
+        campaigns[bidId].setBudget(newBudget);
+        emitCampaignUpdated(campaigns[bidId]);
     }
 
     /** 
@@ -217,7 +219,7 @@ contract AdvertisementStorage is Whitelist {
         public
         view
         returns (uint startDate) {
-        return campaigns[bidId].startDate;
+        return campaigns[bidId].getStartDate();
     }
 
     /**
@@ -233,8 +235,8 @@ contract AdvertisementStorage is Whitelist {
         onlyIfCampaignExists("setCampaignStartDateById",bidId)
         onlyIfWhitelisted("setCampaignStartDateById",msg.sender)
         {
-        campaigns[bidId].startDate = newStartDate;
-        emitEvent(campaigns[bidId]);
+        campaigns[bidId].setStartDate(newStartDate);
+        emitCampaignUpdated(campaigns[bidId]);
     }
     
     /** 
@@ -249,7 +251,7 @@ contract AdvertisementStorage is Whitelist {
         public
         view
         returns (uint endDate) {
-        return campaigns[bidId].endDate;
+        return campaigns[bidId].getEndDate();
     }
 
     /**
@@ -265,8 +267,8 @@ contract AdvertisementStorage is Whitelist {
         onlyIfCampaignExists("setCampaignEndDateById",bidId)
         onlyIfWhitelisted("setCampaignEndDateById",msg.sender)
         {
-        campaigns[bidId].endDate = newEndDate;
-        emitEvent(campaigns[bidId]);
+        campaigns[bidId].setEndDate(newEndDate);
+        emitCampaignUpdated(campaigns[bidId]);
     }
     /** 
     @notice Get information regarding validity of a campaign.
@@ -280,7 +282,7 @@ contract AdvertisementStorage is Whitelist {
         public
         view
         returns (bool valid) {
-        return campaigns[bidId].valid;
+        return campaigns[bidId].getValidity();
     }
 
     /**
@@ -296,8 +298,8 @@ contract AdvertisementStorage is Whitelist {
         onlyIfCampaignExists("setCampaignValidById",bidId)
         onlyIfWhitelisted("setCampaignValidById",msg.sender)
         {
-        campaigns[bidId].valid = isValid;
-        emitEvent(campaigns[bidId]);
+        campaigns[bidId].setValidity(isValid);
+        emitCampaignUpdated(campaigns[bidId]);
     }
 
     /**
@@ -311,7 +313,7 @@ contract AdvertisementStorage is Whitelist {
         public
         view
         returns (address campOwner) {
-        return campaigns[bidId].owner;
+        return campaigns[bidId].getOwner();
     }
 
     /**
@@ -327,39 +329,41 @@ contract AdvertisementStorage is Whitelist {
         onlyIfCampaignExists("setCampaignOwnerById",bidId)
         onlyIfWhitelisted("setCampaignOwnerById",msg.sender)
         {
-        campaigns[bidId].owner = newOwner;
-        emitEvent(campaigns[bidId]);
+        campaigns[bidId].setOwner(newOwner);
+        emitCampaignUpdated(campaigns[bidId]);
     }
 
     /**
-    @notice Internal function for event emission
+    @notice Function to emit campaign updates
     @dev
-        Checks if a campaign is already stored in contract. If the campaign exists, it emits a 
-        CampaignUpdated event with the new campaign information. In case it is a new campaign, the 
-        same information is emited as a CampaingCreatedEvent. 
+        It emits a CampaignUpdated event with the new campaign information. 
     */
-    function emitEvent(CampaignLibrary.Campaign campaign) private {
+    function emitCampaignUpdated(CampaignLibrary.Campaign storage campaign) private {
+        emit CampaignUpdated(
+            campaign.getBidId(),
+            campaign.getPrice(),
+            campaign.getBudget(),
+            campaign.getStartDate(),
+            campaign.getEndDate(),
+            campaign.getValidity(),
+            campaign.getOwner()
+        );
+    }
 
-        if (campaigns[campaign.bidId].owner == 0x0) {
-            emit CampaignCreated(
-                campaign.bidId,
-                campaign.price,
-                campaign.budget,
-                campaign.startDate,
-                campaign.endDate,
-                campaign.valid,
-                campaign.owner
-            );
-        } else {
-            emit CampaignUpdated(
-                campaign.bidId,
-                campaign.price,
-                campaign.budget,
-                campaign.startDate,
-                campaign.endDate,
-                campaign.valid,
-                campaign.owner
-            );
-        }
+    /**
+    @notice Function to emit campaign creations
+    @dev
+        It emits a CampaignCreated event with the new campaign created. 
+    */
+    function emitCampaignCreated(CampaignLibrary.Campaign storage campaign) private {
+        emit CampaignCreated(
+            campaign.getBidId(),
+            campaign.getPrice(),
+            campaign.getBudget(),
+            campaign.getStartDate(),
+            campaign.getEndDate(),
+            campaign.getValidity(),
+            campaign.getOwner()
+        );
     }
 }
