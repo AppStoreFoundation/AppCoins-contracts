@@ -7,19 +7,18 @@
     "test": "test"
   },
   "dependencies": {
-    "big-number": "^0.4.0",
+    "big-number": "^2.0.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "dotenv": "^5.0.1",
-    "ganache-cli": "6.1.8",
-    "openzeppelin-solidity": "1.12.0",
+    "dotenv": "^8.2.0",
+    "ganache-cli": "^6.10.1",
+    "openzeppelin-solidity": "^1.12.0",
     "pre-commit": "^1.2.2",
-    "solhint": "^1.2.1",
-    "solium": "1.1.7",
-    "truffle": "4.1.14",
-    "truffle-hdwallet-provider": "0.0.3",
-    "typedarray-to-buffer": "^3.1.5",
-    "web3": "1.0.0-beta.36"
+    "solhint": "^3.2.0",
+    "solium": "^1.2.5",
+    "truffle": "^5.1.43",
+    "truffle-hdwallet-provider": "^1.0.17",
+    "web3": "^1.2.11"
   },
   "repository": {
     "type": "git",
@@ -27,9 +26,9 @@
   },
   "homepage": "https://AppStoreFoundation.github.io",
   "devDependencies": {
-    "cz-conventional-changelog": "^2.1.0",
-    "semantic-release": "^15.5.1",
-    "solidity-coverage": "0.5.11"
+    "cz-conventional-changelog": "^3.3.0",
+    "semantic-release": "^17.1.1",
+    "solidity-coverage": "^0.7.10"
   },
   "scripts": {
     "test": "truffle test",
