@@ -2,7 +2,6 @@ pragma solidity 0.4.24;
 
 import "./Ownable.sol";
 import "../AppCoins.sol";
-import "../Advertisement.sol";
 import "./StorageUser.sol";
 import "./SingleAllowance.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
