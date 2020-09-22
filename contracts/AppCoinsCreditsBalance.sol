@@ -67,11 +67,14 @@ contract AppCoinsCreditsBalance is Whitelist {
     function depositFunds(uint _amount, bytes _merkleTreeHash)
         public
         onlyIfWhitelisted("depositFunds", msg.sender){
-        require(appc.allowance(msg.sender, address(this)) >= _amount);
+        
         registerBalanceProof(_merkleTreeHash);
 
-        appc.transferFrom(msg.sender, address(this), _amount);
         balance = SafeMath.add(balance,_amount);
+
+        require(appc.allowance(msg.sender, address(this)) >= _amount);
+        appc.transferFrom(msg.sender, address(this), _amount);
+        
         emit Deposit(_amount);
     }
 
